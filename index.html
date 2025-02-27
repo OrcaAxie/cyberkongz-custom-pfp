@@ -1,8 +1,9 @@
 <html>
     <head>
-        <title>Cyberkongz Custom PFP by OrcaAxie</title>
+        <title>Cyberkongz Custom PFP</title>
     </head>
     <body>
+        <h1>Cyberkongz Custom PFP</h1>
         <div>
             <span>ID:</span><input type="number" id="id" value="810" /><button id="btn">Refresh Image</button><button id="download">Download Image</button><br/>
             <br/>
@@ -19,8 +20,8 @@
                 <span>Suit:</span>
                 <br/>
                 <input type="checkbox" id="suit" />
-                <label for="suit">Suit</label><br/>
-                <span>Suit with Tie (by BigMfer):</span><br/>
+                <label for="suit">Suit Black Tie:</label><br/>
+                <span>Colorful Tie (by BigMfer):</span><br/>
                 <input type="checkbox" id="suit_red_tie" />
                 <label for="suit_red_tie">Suit Red Tie</label><br/>
                 <input type="checkbox" id="suit_purple_tie" />
@@ -38,6 +39,8 @@
             <div>
                 <img id="image" style="width: 680px;height: 680px;" src="https://cyberkongz.fra1.cdn.digitaloceanspaces.com/site/assets/images/genesis/810.png" />
                 <canvas id="myCanvas" width="680" height="680" style="display:none;"></canvas>
+                <br/><br/>
+                <span>By OrcaAxie</span>
             </div>
         </div>
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -104,14 +107,7 @@
                         function drawSuit() {
                             if (is_suit) {
                                 drawImage(suit_image, drawHat);
-                            } else {
-                                drawHat();
-                            }
-                        }
-
-                        // Draw the suit with tie if checked
-                        function drawSuitWithTie() {
-                            if (is_suit_red_tie) {
+                            } else if (is_suit_red_tie) {
                                 drawImage(suit_red_tie_image, drawHat);
                             } else if (is_suit_purple_tie) {
                                 drawImage(suit_purple_tie_image, drawHat);
