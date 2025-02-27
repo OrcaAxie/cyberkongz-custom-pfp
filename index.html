@@ -21,7 +21,6 @@
                 <br/>
                 <input type="checkbox" id="suit" />
                 <label for="suit">Suit Black Tie:</label><br/>
-                <span>Colorful Tie (by BigMfer):</span><br/>
                 <input type="checkbox" id="suit_red_tie" />
                 <label for="suit_red_tie">Suit Red Tie</label><br/>
                 <input type="checkbox" id="suit_purple_tie" />
@@ -35,12 +34,18 @@
                 <input type="checkbox" id="rainbow_glass" />
                 <label for="rainbow_glass">Rainbow Glass</label><br/>
             </div>
+            <div>
+                <span>Hats:</span>
+                <br/>
+                <input type="checkbox" id="mcd" />
+                <label for="mcd">McDonald's Hat</label><br/>
+                <input type="checkbox" id="kfc" />
+                <label for="kfc">KFC Hat</label><br/>
+            </div>
             
             <div>
                 <img id="image" style="width: 680px;height: 680px;" src="https://cyberkongz.fra1.cdn.digitaloceanspaces.com/site/assets/images/genesis/810.png" />
                 <canvas id="myCanvas" width="680" height="680" style="display:none;"></canvas>
-                <br/><br/>
-                <span>By OrcaAxie</span>
             </div>
         </div>
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -54,6 +59,8 @@
                 const suit_red_tie_image = base_url + "bebe_suit_red_tie.png";
                 const suit_purple_tie_image = base_url + "bebe_suit_purple_tie.png";
                 const suit_green_tie_image = base_url + "bebe_suit_green_tie.png";
+                const mcd_image = base_url + "McD.png";
+                const kfc_image = base_url + "RedHat.png";
 
                 function drawImage() {
                     var id = $('#id').val();
@@ -72,6 +79,8 @@
                     var is_suit_red_tie = $("#suit_red_tie").is(':checked');
                     var is_suit_purple_tie = $("#suit_purple_tie").is(':checked');
                     var is_suit_green_tie = $("#suit_green_tie").is(':checked');
+                    var is_mcd = $("#mcd").is(':checked');
+                    var is_kfc = $("#kfc").is(':checked');
 
                     var c = document.getElementById("myCanvas");
                     var ctx = c.getContext("2d");
@@ -122,6 +131,10 @@
                         function drawHat() {
                             if (is_santa_hat) {
                                 drawImage(santa_hat_image, drawRainbowGlass);
+                            } else if (is_mcd) {
+                                drawImage(mcd_image, drawRainbowGlass);
+                            } else if (is_kfc) {
+                                drawImage(kfc_image, drawRainbowGlass);
                             } else {
                                 drawRainbowGlass();
                             }
