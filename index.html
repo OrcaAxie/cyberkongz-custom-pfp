@@ -1,0 +1,185 @@
+<html>
+    <head>
+        <title>Cyberkongz Christmas PFP by OrcaAxie</title>
+    </head>
+    <body>
+        <div>
+            <span>ID:</span><input type="number" id="id" value="810" /><button id="btn">Refresh Image</button><button id="download">Download Image</button><br/>
+            <br/>
+            <div>
+                <span>Santa:</span>
+                <br/>
+                <input type="checkbox" id="santa_hat" />
+                <label for="santa_hat">Santa Hat</label><br/>
+                <input type="checkbox" id="santa_coat" />
+                <label for="santa_coat">Santa Coat</label><br/>
+                
+            </div>
+            <div>
+                <span>Suit:</span>
+                <br/>
+                <input type="checkbox" id="suit" />
+                <label for="suit">Suit</label><br/>
+                <span>Suit with Tie (by BigMfer):</span><br/>
+                <input type="checkbox" id="suit_red_tie" />
+                <label for="suit_red_tie">Suit Red Tie</label><br/>
+                <input type="checkbox" id="suit_purple_tie" />
+                <label for="suit_purple_tie">Suit Purple Tie</label><br/>
+                <input type="checkbox" id="suit_green_tie" />
+                <label for="suit_green_tie">Suit Green Tie</label>
+            </div>
+            <div>
+                <span>Glasses:</span>
+                <br/>
+                <input type="checkbox" id="rainbow_glass" />
+                <label for="rainbow_glass">Rainbow Glass</label><br/>
+            </div>
+            
+            <div>
+                <img id="image" style="width: 680px;height: 680px;" src="https://cyberkongz.fra1.cdn.digitaloceanspaces.com/site/assets/images/genesis/810.png" />
+                <canvas id="myCanvas" width="680" height="680" style="display:none;"></canvas>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                const base_url = "https://cyberkongz-custom-pfp.vercel.app/"
+                const santa_coat_image = base_url + "Santa_Coat.png";
+                const santa_hat_image = base_url + "Santa_Hat.png";
+                const suit_image = base_url + "Kongz-Suit.png";
+                const rainbow_glass_image = base_url + "rainbow_glass.png";
+                const suit_red_tie_image = base_url + "bebe_suit_red_tie.png";
+                const suit_purple_tie_image = base_url + "bebe_suit_purple_tie.png";
+                const suit_green_tie_image = base_url + "bebe_suit_green_tie.png";
+
+                function drawImage() {
+                    var id = $('#id').val();
+                    var url = "https://cyberkongz.fra1.cdn.digitaloceanspaces.com/site/assets/images/";
+                    if (id < 1000) {
+                        url += "genesis/";
+                    } else {
+                        url += "baby/";
+                    }
+                    url += id + ".png"; // Final image URL
+
+                    var is_santa_coat = $('#santa_coat').is(':checked');
+                    var is_santa_hat = $('#santa_hat').is(':checked');
+                    var is_suit = $('#suit').is(':checked');
+                    var is_rainbow_glass = $("#rainbow_glass").is(':checked');
+                    var is_suit_red_tie = $("#suit_red_tie").is(':checked');
+                    var is_suit_purple_tie = $("#suit_purple_tie").is(':checked');
+                    var is_suit_green_tie = $("#suit_green_tie").is(':checked');
+
+                    var c = document.getElementById("myCanvas");
+                    var ctx = c.getContext("2d");
+
+                    var imageObj = new Image();
+                    imageObj.crossOrigin = "Anonymous";
+                    imageObj.src = url;
+                    imageObj.onload = function() {
+                        // Draw the base image (URL image) on the canvas
+                        ctx.drawImage(imageObj, 0, 0, 680, 680);
+
+                        // Function to load and draw an image with a callback to ensure order
+                        function drawImage(src, callback, x=0, y=0) {
+                            var img = new Image();
+                            img.src = src;
+                            img.crossOrigin = "Anonymous";
+                            img.onload = function() {
+                                ctx.drawImage(img, x + 0, y + 0, 680, 680);
+                                callback();
+                            };
+                        }
+
+                        // Draw the Santa coat first if checked
+                        function drawCoat() {
+                            if (is_santa_coat) {
+                                drawImage(santa_coat_image, drawSuit);
+                            } else {
+                                drawSuit();
+                            }
+                        }
+
+                        // Draw the suit second if checked
+                        function drawSuit() {
+                            if (is_suit) {
+                                drawImage(suit_image, drawHat);
+                            } else {
+                                drawHat();
+                            }
+                        }
+
+                        // Draw the suit with tie if checked
+                        function drawSuitWithTie() {
+                            if (is_suit_red_tie) {
+                                drawImage(suit_red_tie_image, drawHat);
+                            } else if (is_suit_purple_tie) {
+                                drawImage(suit_purple_tie_image, drawHat);
+                            } else if (is_suit_green_tie) {
+                                drawImage(suit_green_tie_image, drawHat);
+                            } else {
+                                drawHat();
+                            }
+                        }
+
+                        // Draw the Santa hat last if checked
+                        function drawHat() {
+                            if (is_santa_hat) {
+                                drawImage(santa_hat_image, drawRainbowGlass);
+                            } else {
+                                drawRainbowGlass();
+                            }
+                        }
+
+                        function drawRainbowGlass() {
+                            if (is_rainbow_glass) {
+                                y = 0
+                                console.log(id);
+                                if (id >= 1000) {
+                                    x = -20;
+                                    y = 0;
+                                }
+                                drawImage(rainbow_glass_image, updateImageFromCanvas, x, y);
+                            } else {
+                                updateImageFromCanvas();
+                            }
+                        }
+
+                        // Start the drawing process
+                        drawCoat();
+                    };
+
+
+                }
+
+                function updateImageFromCanvas() {
+                    var c = document.getElementById("myCanvas");
+                    var dataUrl = c.toDataURL("image/png"); // Get the image from canvas as Data URL
+                    $('#image').attr('src', dataUrl); // Update the <img> src with the canvas image
+                }
+                $('#id').keypress(function(event){
+                    if(event.keyCode == 13){
+                        drawImage();
+                    }
+                });
+                $('#btn').click(function(){
+                    drawImage();
+                });
+
+                $('input[type="checkbox"]').change(function(){
+                    drawImage();
+                });
+
+                $('#download').click(function(){
+                    var c = document.getElementById("myCanvas");
+                    var dataUrl = c.toDataURL("image/png");
+                    var a = document.createElement('a');
+                    a.href = dataUrl;
+                    var id = $('#id').val();
+                    a.download = 'christmas-pfp-' + id + '.png';
+                    a.click();
+                });
+            });
+        </script>
+    </body>
+</html>
