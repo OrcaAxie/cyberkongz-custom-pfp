@@ -12,6 +12,7 @@
                 <input type="checkbox" id="enable_shades" />
                 <label for="enable_shades">Enable Animated Shades</label><br/>
                 <button id="download_gif">Download GIF</button>
+                <span id="gif_progress" style="margin-left: 10px; font-weight: bold;"></span>
             </div>
             <br/>
             <div>
@@ -250,6 +251,7 @@
 
                     imageObj.onload = function () {
                         let frame = 1;
+                        $('#gif_progress').text(`Creating animated shades: 0/${shadeCount}`);
 
                         function drawNextFrame() {
                             ctx.clearRect(0, 0, 680, 680);
@@ -286,6 +288,7 @@
                                 if (index >= layers.length) {
                                     gif.addFrame(ctx, {copy: true, delay: 100});
                                     frame++;
+                                    $('#gif_progress').text(`Creating animated shades: ${frame - 1}/${shadeCount}`);
                                     if (frame <= shadeCount) {
                                         drawNextFrame();
                                     } else {
@@ -296,6 +299,7 @@
                                             a.click();
                                         });
                                         gif.render();
+                                        $('#gif_progress').text('');
                                     }
                                     return;
                                 }
