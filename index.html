@@ -6,6 +6,13 @@
         <h1>Cyberkongz Custom PFP</h1>
         <div>
             <span>ID:</span><input type="number" id="id" value="810" /><button id="btn">Refresh Image</button><button id="download">Download Image</button><br/>
+            <div>
+                <span>GIF Options:</span>
+                <br/>
+                <input type="checkbox" id="enable_shades" />
+                <label for="enable_shades">Enable Animated Shades</label><br/>
+                <button id="download_gif">Download GIF</button>
+            </div>
             <br/>
             <div>
                 <span>Santa:</span>
@@ -49,8 +56,21 @@
             </div>
         </div>
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+        <!-- ✅ Load gif.js -->
+        <script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.min.js"></script>
         <script>
-            $(document).ready(function(){
+            window.addEventListener('load', function () {
+                if (typeof GIF !== 'undefined') {
+                    GIF.prototype.workerScript = 'https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.worker.js';
+                } else {
+                    console.error("GIF.js failed to load.");
+                }
+            });
+        </script>
+        <script>
+            // $(document).ready(function(){
+            $(window).on('load', function () {
                 const base_url = "https://cyberkongz-custom-pfp.vercel.app/"
                 const santa_coat_image = base_url + "Santa_Coat.png";
                 const santa_hat_image = base_url + "Santa_Hat.png";
@@ -188,6 +208,107 @@
                     a.download = 'cyberkongz-custom-pfp-' + id + '.png';
                     a.click();
                 });
+
+                $('#download_gif').click(function() {
+                    var id = $('#id').val();
+                    var url = "https://cyberkongz.fra1.cdn.digitaloceanspaces.com/site/assets/images/";
+                    url += (id < 1000) ? "genesis/" : "baby/";
+                    url += id + ".png";
+
+                    var is_santa_coat = $('#santa_coat').is(':checked');
+                    var is_santa_hat = $('#santa_hat').is(':checked');
+                    var is_suit = $('#suit').is(':checked');
+                    var is_rainbow_glass = $("#rainbow_glass").is(':checked');
+                    var is_suit_red_tie = $("#suit_red_tie").is(':checked');
+                    var is_suit_purple_tie = $("#suit_purple_tie").is(':checked');
+                    var is_suit_green_tie = $("#suit_green_tie").is(':checked');
+                    var is_mcd = $("#mcd").is(':checked');
+                    var is_kfc = $("#kfc").is(':checked');
+                    var is_enable_shades = $("#enable_shades").is(':checked');
+
+                    if (!is_enable_shades) {
+                        alert("Please enable 'Animated Shades' to create GIF.");
+                        return;
+                    }
+
+                    const shadeBaseURL = "https://cyberkongz-custom-pfp.vercel.app/shades/";
+                    const shadeCount = 22;
+
+                    var gif = new GIF({
+                        workers: 2,
+                        quality: 10,
+                        width: 680,
+                        height: 680
+                    });
+
+                    const c = document.getElementById("myCanvas");
+                    const ctx = c.getContext("2d");
+
+                    const imageObj = new Image();
+                    imageObj.crossOrigin = "Anonymous";
+                    imageObj.src = url;
+
+                    imageObj.onload = function () {
+                        let frame = 1;
+
+                        function drawNextFrame() {
+                            ctx.clearRect(0, 0, 680, 680);
+                            ctx.drawImage(imageObj, 0, 0, 680, 680);
+
+                            let loadAndDraw = (src, cb) => {
+                                const img = new Image();
+                                img.crossOrigin = "Anonymous";
+                                img.src = src;
+                                img.onload = () => {
+                                    ctx.drawImage(img, 0, 0, 680, 680);
+                                    cb();
+                                };
+                            };
+
+                            let layers = [];
+
+                            if (is_santa_coat) layers.push(santa_coat_image);
+                            if (is_suit) layers.push(suit_image);
+                            else if (is_suit_red_tie) layers.push(suit_red_tie_image);
+                            else if (is_suit_purple_tie) layers.push(suit_purple_tie_image);
+                            else if (is_suit_green_tie) layers.push(suit_green_tie_image);
+
+                            if (is_santa_hat) layers.push(santa_hat_image);
+                            else if (is_mcd) layers.push(mcd_image);
+                            else if (is_kfc) layers.push(kfc_image);
+
+                            if (is_rainbow_glass) layers.push(rainbow_glass_image);
+
+                            // Push the dynamic shade layer last
+                            layers.push(shadeBaseURL + `shade${frame}.png`);
+
+                            function drawLayers(index) {
+                                if (index >= layers.length) {
+                                    gif.addFrame(ctx, {copy: true, delay: 100});
+                                    frame++;
+                                    if (frame <= shadeCount) {
+                                        drawNextFrame();
+                                    } else {
+                                        gif.on('finished', function(blob) {
+                                            const a = document.createElement('a');
+                                            a.href = URL.createObjectURL(blob);
+                                            a.download = `cyberkongz-shade-gif-${id}.gif`;
+                                            a.click();
+                                        });
+                                        gif.render();
+                                    }
+                                    return;
+                                }
+                                loadAndDraw(layers[index], () => drawLayers(index + 1));
+                            }
+
+                            drawLayers(0);
+                        }
+
+                        drawNextFrame();
+                    };
+                });
+
             });
         </script>
     </body>
