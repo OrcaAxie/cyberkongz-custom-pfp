@@ -7,10 +7,16 @@
         <div>
             <span>ID:</span><input type="number" id="id" value="810" /><button id="btn">Refresh Image</button><button id="download">Download Image</button><br/>
             <div>
-                <span>GIF Options:</span>
-                <br/>
-                <input type="checkbox" id="enable_shades" />
-                <label for="enable_shades">Enable Animated Shades</label><br/>
+                <span>GIF Options:</span><br/>
+                <input type="radio" name="gif_option" id="gif_none" value="none" checked />
+                <label for="gif_none">None</label><br/>
+
+                <input type="radio" name="gif_option" id="gif_shades" value="shades" />
+                <label for="gif_shades">Animated Shades</label><br/>
+
+                <input type="radio" name="gif_option" id="gif_vr" value="vr" />
+                <label for="gif_vr">VR Shades</label><br/>
+
                 <button id="download_gif">Download GIF</button>
                 <span id="gif_progress" style="margin-left: 10px; font-weight: bold;"></span>
             </div>
@@ -22,7 +28,6 @@
                 <label for="santa_hat">Santa Hat</label><br/>
                 <input type="checkbox" id="santa_coat" />
                 <label for="santa_coat">Santa Coat</label><br/>
-                
             </div>
             <div>
                 <span>Suit:</span>
@@ -37,10 +42,11 @@
                 <label for="suit_green_tie">Suit Green Tie</label>
             </div>
             <div>
-                <span>Glasses:</span>
-                <br/>
+                <span>Glasses:</span><br/>
                 <input type="checkbox" id="rainbow_glass" />
                 <label for="rainbow_glass">Rainbow Glass</label><br/>
+                <input type="checkbox" id="vr_glass" />
+                <label for="vr_glass">VR Shades</label><br/>
             </div>
             <div>
                 <span>Hats:</span>
@@ -164,10 +170,9 @@
                         function drawRainbowGlass() {
                             if (is_rainbow_glass) {
                                 y = 0
-                                console.log(id);
                                 if (id >= 1000) {
                                     x = -20;
-                                    y = 0;
+                                    y = -20;
                                 }
                                 drawImage(rainbow_glass_image, updateImageFromCanvas, x, y);
                             } else {
@@ -216,26 +221,15 @@
                     url += (id < 1000) ? "genesis/" : "baby/";
                     url += id + ".png";
 
-                    var is_santa_coat = $('#santa_coat').is(':checked');
-                    var is_santa_hat = $('#santa_hat').is(':checked');
-                    var is_suit = $('#suit').is(':checked');
-                    var is_rainbow_glass = $("#rainbow_glass").is(':checked');
-                    var is_suit_red_tie = $("#suit_red_tie").is(':checked');
-                    var is_suit_purple_tie = $("#suit_purple_tie").is(':checked');
-                    var is_suit_green_tie = $("#suit_green_tie").is(':checked');
-                    var is_mcd = $("#mcd").is(':checked');
-                    var is_kfc = $("#kfc").is(':checked');
-                    var is_enable_shades = $("#enable_shades").is(':checked');
+                    var gifOption = $('input[name="gif_option"]:checked').val(); // "none", "shades", or "vr"
 
-                    if (!is_enable_shades) {
-                        alert("Please enable 'Animated Shades' to create GIF.");
+                    if (gifOption === "none") {
+                        alert("Please select an animation option (Shades or VR) to create GIF.");
                         return;
                     }
 
-                    const shadeBaseURL = "https://cyberkongz-custom-pfp.vercel.app/shades/";
                     const shadeCount = 22;
-
-                    var gif = new GIF({
+                    const gif = new GIF({
                         workers: 2,
                         quality: 10,
                         width: 680,
@@ -251,7 +245,7 @@
 
                     imageObj.onload = function () {
                         let frame = 1;
-                        $('#gif_progress').text(`Creating animated shades: 0/${shadeCount}`);
+                        $('#gif_progress').text(`Creating ${gifOption} animation: 0/${shadeCount}`);
 
                         function drawNextFrame() {
                             ctx.clearRect(0, 0, 680, 680);
@@ -269,33 +263,38 @@
 
                             let layers = [];
 
-                            if (is_santa_coat) layers.push(santa_coat_image);
-                            if (is_suit) layers.push(suit_image);
-                            else if (is_suit_red_tie) layers.push(suit_red_tie_image);
-                            else if (is_suit_purple_tie) layers.push(suit_purple_tie_image);
-                            else if (is_suit_green_tie) layers.push(suit_green_tie_image);
+                            if ($('#santa_coat').is(':checked')) layers.push(santa_coat_image);
+                            if ($('#suit').is(':checked')) layers.push(suit_image);
+                            else if ($('#suit_red_tie').is(':checked')) layers.push(suit_red_tie_image);
+                            else if ($('#suit_purple_tie').is(':checked')) layers.push(suit_purple_tie_image);
+                            else if ($('#suit_green_tie').is(':checked')) layers.push(suit_green_tie_image);
 
-                            if (is_santa_hat) layers.push(santa_hat_image);
-                            else if (is_mcd) layers.push(mcd_image);
-                            else if (is_kfc) layers.push(kfc_image);
+                            if ($('#santa_hat').is(':checked')) layers.push(santa_hat_image);
+                            else if ($('#mcd').is(':checked')) layers.push(mcd_image);
+                            else if ($('#kfc').is(':checked')) layers.push(kfc_image);
 
-                            if (is_rainbow_glass) layers.push(rainbow_glass_image);
+                            if ($('#rainbow_glass').is(':checked')) layers.push(rainbow_glass_image);
+                            if ($('#vr_glass').is(':checked')) layers.push("https://cyberkongz-custom-pfp.vercel.app/vr/RainbowVR1.png"); // static overlay when not animating
 
-                            // Push the dynamic shade layer last
-                            layers.push(shadeBaseURL + `shade${frame}.png`);
+                            // Push animation frame last depending on option
+                            if (gifOption === "shades") {
+                                layers.push(`https://cyberkongz-custom-pfp.vercel.app/shades/shade${frame}.png`);
+                            } else if (gifOption === "vr") {
+                                layers.push(`https://cyberkongz-custom-pfp.vercel.app/vr/RainbowVR${frame}.png`);
+                            }
 
                             function drawLayers(index) {
                                 if (index >= layers.length) {
                                     gif.addFrame(ctx, {copy: true, delay: 100});
                                     frame++;
-                                    $('#gif_progress').text(`Creating animated shades: ${frame - 1}/${shadeCount}`);
+                                    $('#gif_progress').text(`Creating ${gifOption} animation: ${frame - 1}/${shadeCount}`);
                                     if (frame <= shadeCount) {
                                         drawNextFrame();
                                     } else {
                                         gif.on('finished', function(blob) {
                                             const a = document.createElement('a');
                                             a.href = URL.createObjectURL(blob);
-                                            a.download = `cyberkongz-shade-gif-${id}.gif`;
+                                            a.download = `cyberkongz-${gifOption}-gif-${id}.gif`;
                                             a.click();
                                         });
                                         gif.render();
