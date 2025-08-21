@@ -83,6 +83,7 @@
                 const santa_hat_image = base_url + "Santa_Hat.png";
                 const suit_image = base_url + "Kongz-Suit.png";
                 const rainbow_glass_image = base_url + "rainbow_glass.png";
+                const vr_glass_image = base_url + "/vr/RainbowVR1.png";
                 const suit_red_tie_image = base_url + "bebe_suit_red_tie.png";
                 const suit_purple_tie_image = base_url + "bebe_suit_purple_tie.png";
                 const suit_green_tie_image = base_url + "bebe_suit_green_tie.png";
@@ -103,6 +104,7 @@
                     var is_santa_hat = $('#santa_hat').is(':checked');
                     var is_suit = $('#suit').is(':checked');
                     var is_rainbow_glass = $("#rainbow_glass").is(':checked');
+                    var is_vr_glass = $("#vr_glass").is(':checked');
                     var is_suit_red_tie = $("#suit_red_tie").is(':checked');
                     var is_suit_purple_tie = $("#suit_purple_tie").is(':checked');
                     var is_suit_green_tie = $("#suit_green_tie").is(':checked');
@@ -175,6 +177,13 @@
                                     y = -20;
                                 }
                                 drawImage(rainbow_glass_image, updateImageFromCanvas, x, y);
+                            } else if (is_vr_glass) {
+                                y = 0
+                                if (id >= 1000) {
+                                    x = -20;
+                                    y = -20;
+                                }
+                                drawImage(vr_glass_image, updateImageFromCanvas, x, y);
                             } else {
                                 updateImageFromCanvas();
                             }
